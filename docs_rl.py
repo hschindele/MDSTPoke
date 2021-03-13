@@ -27,7 +27,22 @@ class SimpleRLPlayer(Gen8EnvSinglePlayer):
                     battle.opponent_active_pokemon.type_1,
                     battle.opponent_active_pokemon.type_2,
                 )
-
+       
+        canDyna = 0
+        if battle.can_dynamax:
+            canDyna = 1
+            
+        canODyna = 0
+        if battle.opponent_can_dynamax:
+            canODyna = 1
+        
+        dynamaxTurnsLeft = battle.dynamax_turns_left
+        if battle.dynamax_turns_left == None:
+            dynamaxTurnsLeft = -1
+            
+        OdynamaxTurnsLeft = battle.opponent_dynamax_turns_left
+        if battle.opponent_dynamax_turns_left == None:
+            OdynamaxTurnsLeft = -1
         # We count how many pokemons have not fainted in each team
         remaining_mon_team = (
             len([mon for mon in battle.team.values() if mon.fainted]) / 6
@@ -35,19 +50,47 @@ class SimpleRLPlayer(Gen8EnvSinglePlayer):
         remaining_mon_opponent = (
             len([mon for mon in battle.opponent_team.values() if mon.fainted]) / 6
         )
-
+        
+        our_cur_status = -1
+        if battle.active_pokemon.status:
+            our_cur_status = battle.active_pokemon.status.value
+        
+        opp_cur_status = -1
+        if battle.opponent_active_pokemon.status:
+            opp_cur_status = battle.opponent_active_pokemon.status.value
+            
+        our_cur_types = -1*np.ones(2)
+        opp_cur_types = -1*np.ones(2)
+        if battle.active_pokemon:
+            our_cur_types[0] = battle.active_pokemon.type_1.value
+            if battle.active_pokemon.type_2:
+                our_cur_types[1] = battle.active_pokemon.type_2.value
+        
+        if battle.active_pokemon:
+            opp_cur_types[0] = battle.opponent_active_pokemon.type_1.value
+            if battle.opponent_active_pokemon.type_2:
+                opp_cur_types[1] = battle.opponent_active_pokemon.type_2.value
+        
         # Final vector with 10 components
         return np.concatenate(
             [
                 moves_base_power,
                 moves_dmg_multiplier,
                 [remaining_mon_team, remaining_mon_opponent],
+                [canDyna,
+                canODyna,
+                dynamaxTurnsLeft,
+                OdynamaxTurnsLeft,
+                our_cur_status,
+                opp_cur_status],
+                our_cur_types,
+                opp_cur_types
             ]
         )
 
     def compute_reward(self, battle) -> float:
         return self.reward_computing_helper(
-            battle, fainted_value=2, hp_value=1, victory_value=30
+            battle, fainted_value=1, hp_value=1, victory_value=30
         )
 
 def dqn_training(player, dqn, nb_steps):
@@ -68,6 +111,7 @@ def create_model(n_action=None,load=None):
 
 if __name__=='__main__':
     env_player = SimpleRLPlayer(battle_format="gen8randombattle")
+    
 
     opponent = Greedy(battle_format="gen8randombattle")
 
@@ -75,7 +119,7 @@ if __name__=='__main__':
     n_action = len(env_player.action_space)
 
     model = Sequential()
-    model.add(Dense(128, activation="elu", input_shape=(1, 10)))
+    model.add(Dense(128, activation="elu", input_shape=(1, 20)))
 
     # Our embedding have shape (1, 10), which affects our hidden layer
     # dimension and output dimension
@@ -109,7 +153,7 @@ if __name__=='__main__':
         enable_double_dqn=True,
     )
 
-    dqn.compile(Adam(lr=0.00025), metrics=["mae"])
+    dqn.compile(Adam(lr=0.0004), metrics=["mae"])
 
     # Training
     NUM_EPOCHS = 37
