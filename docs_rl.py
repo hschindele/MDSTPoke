@@ -10,7 +10,7 @@ from rl.policy import LinearAnnealedPolicy, EpsGreedyQPolicy
 from tensorflow.keras.optimizers import Adam
 from greedy import Greedy
 
-NB_TRAINING_STEPS = 10000
+NB_TRAINING_STEPS = 2000
 NB_EVALUATION_EPISODES = 100
 
 
@@ -96,7 +96,7 @@ class SimpleRLPlayer(Gen8EnvSinglePlayer):
         )
 
 def dqn_training(player, dqn, nb_steps):
-    dqn.fit(player, nb_steps=nb_steps)
+    dqn.fit(player, nb_steps=nb_steps, log_interval = 10000)
     player.complete_current_battle()
 
 def dqn_evaluation(player, dqn, nb_episodes):
@@ -160,7 +160,7 @@ if __name__=='__main__':
     dqn.compile(Adam(lr=0.0003), metrics=["mae"])
 
     # Training
-    NUM_EPOCHS = 37
+    NUM_EPOCHS = 1
     
     env_player.play_against(
         env_algorithm=dqn_training,
@@ -168,7 +168,7 @@ if __name__=='__main__':
         env_algorithm_kwargs={"dqn": dqn, "nb_steps": NB_TRAINING_STEPS*NUM_EPOCHS},
     )
 
-    model.save("model_%d" % (NB_TRAINING_STEPS*NUM_EPOCHS))
+    model.save_weights("model_%d.h5" % (NB_TRAINING_STEPS*NUM_EPOCHS))
     #also have to serialize memory?
 
     # Evaluation
@@ -178,15 +178,3 @@ if __name__=='__main__':
         opponent=opponent,
         env_algorithm_kwargs={"dqn": dqn, "nb_episodes": NB_EVALUATION_EPISODES},
     )
-© 2021 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Docs
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
