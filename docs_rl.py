@@ -1,3 +1,5 @@
+
+  
 from poke_env.player.env_player import Gen8EnvSinglePlayer
 import numpy as np
 from tensorflow.keras.layers import Dense, Flatten
@@ -119,13 +121,15 @@ if __name__=='__main__':
     n_action = len(env_player.action_space)
 
     model = Sequential()
-    model.add(Dense(128, activation="elu", input_shape=(1, 20)))
+    model.add(Dense(21, activation="elu", input_shape=(1, 20)))
 
     # Our embedding have shape (1, 10), which affects our hidden layer
     # dimension and output dimension
     # Flattening resolve potential issues that would arise otherwise
     model.add(Flatten())
-    model.add(Dense(64, activation="elu"))
+    model.add(Dense(21, activation="elu"))
+    model.add(Dense(21, activation="elu"))
+
     model.add(Dense(n_action, activation="linear"))
 
     memory = SequentialMemory(limit=10000, window_length=1)
@@ -174,3 +178,15 @@ if __name__=='__main__':
         opponent=opponent,
         env_algorithm_kwargs={"dqn": dqn, "nb_episodes": NB_EVALUATION_EPISODES},
     )
+© 2021 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
