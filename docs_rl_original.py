@@ -85,6 +85,7 @@ if __name__=='__main__':
     model.add(Dense(n_action, activation="linear"))
 
     memory = SequentialMemory(limit=10000, window_length=1)
+    
 
     # Ssimple epsilon greedy
     policy = LinearAnnealedPolicy(

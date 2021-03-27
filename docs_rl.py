@@ -1,5 +1,4 @@
-
-  
+from tensorflow import keras
 from poke_env.player.env_player import Gen8EnvSinglePlayer
 import numpy as np
 from tensorflow.keras.layers import Dense, Flatten
@@ -10,7 +9,7 @@ from rl.policy import LinearAnnealedPolicy, EpsGreedyQPolicy
 from tensorflow.keras.optimizers import Adam
 from greedy import Greedy
 
-NB_TRAINING_STEPS = 2000
+NB_TRAINING_STEPS = 5000
 NB_EVALUATION_EPISODES = 100
 
 
@@ -73,6 +72,8 @@ class SimpleRLPlayer(Gen8EnvSinglePlayer):
             if battle.opponent_active_pokemon.type_2:
                 opp_cur_types[1] = battle.opponent_active_pokemon.type_2.value
         
+        firstturn = battle.active_pokemon.first_turn
+        
         # Final vector with 10 components
         return np.concatenate(
             [
@@ -81,6 +82,7 @@ class SimpleRLPlayer(Gen8EnvSinglePlayer):
                 [remaining_mon_team, remaining_mon_opponent],
                 [canDyna,
                 canODyna,
+                firstturn,
                 dynamaxTurnsLeft,
                 OdynamaxTurnsLeft,
                 our_cur_status,
@@ -121,7 +123,7 @@ if __name__=='__main__':
     n_action = len(env_player.action_space)
 
     model = Sequential()
-    model.add(Dense(21, activation="elu", input_shape=(1, 20)))
+    model.add(Dense(21, activation="elu", input_shape=(1, 21)))
 
     # Our embedding have shape (1, 10), which affects our hidden layer
     # dimension and output dimension
@@ -131,6 +133,7 @@ if __name__=='__main__':
     model.add(Dense(21, activation="elu"))
 
     model.add(Dense(n_action, activation="linear"))
+    #model = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_74000")
 
     memory = SequentialMemory(limit=10000, window_length=1)
 
@@ -160,7 +163,7 @@ if __name__=='__main__':
     dqn.compile(Adam(lr=0.0003), metrics=["mae"])
 
     # Training
-    NUM_EPOCHS = 1
+    NUM_EPOCHS = 10
     
     env_player.play_against(
         env_algorithm=dqn_training,
@@ -168,7 +171,7 @@ if __name__=='__main__':
         env_algorithm_kwargs={"dqn": dqn, "nb_steps": NB_TRAINING_STEPS*NUM_EPOCHS},
     )
 
-    model.save_weights("model_%d.h5" % (NB_TRAINING_STEPS*NUM_EPOCHS))
+    model.save("model_%d" % (NB_TRAINING_STEPS*NUM_EPOCHS))
     #also have to serialize memory?
 
     # Evaluation
