@@ -8,9 +8,10 @@ from rl.memory import SequentialMemory
 from rl.policy import LinearAnnealedPolicy, EpsGreedyQPolicy
 from tensorflow.keras.optimizers import Adam
 from greedy import Greedy
+from model_player import ModelPlayer
 
-NB_TRAINING_STEPS = 5000
-NB_EVALUATION_EPISODES = 100
+NB_TRAINING_STEPS = 2002
+NB_EVALUATION_EPISODES = 200
 
 
 class SimpleRLPlayer(Gen8EnvSinglePlayer):
@@ -115,25 +116,29 @@ def create_model(n_action=None,load=None):
 
 if __name__=='__main__':
     env_player = SimpleRLPlayer(battle_format="gen8randombattle")
+    #oppmodel = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_20000")
     
-
+    #opponent = ModelPlayer(oppmodel, env_player)
     opponent = Greedy(battle_format="gen8randombattle")
 
     # Output dimension
     n_action = len(env_player.action_space)
 
-    model = Sequential()
-    model.add(Dense(21, activation="elu", input_shape=(1, 21)))
+    #model = Sequential()
+    #model.add(Dense(21, activation="elu", input_shape=(1, 21)))
 
     # Our embedding have shape (1, 10), which affects our hidden layer
     # dimension and output dimension
     # Flattening resolve potential issues that would arise otherwise
-    model.add(Flatten())
-    model.add(Dense(21, activation="elu"))
-    model.add(Dense(21, activation="elu"))
+    #model.add(Flatten())
+    #model.add(Dense(21, activation="elu"))
+    #model.add(Dense(21, activation="elu"))
 
-    model.add(Dense(n_action, activation="linear"))
-    #model = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_74000")
+    #model.add(Dense(n_action, activation="linear"))
+    
+    #print(model.summary())
+    model = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_80000")
+    
 
     memory = SequentialMemory(limit=10000, window_length=1)
 
