@@ -12,8 +12,8 @@ from model_player import ModelPlayer
 from poke_env.player_configuration import PlayerConfiguration
 from poke_env.server_configuration import ShowdownServerConfiguration
 
-NB_TRAINING_STEPS = 2002
-NB_EVALUATION_EPISODES = 200
+NB_TRAINING_STEPS = 10000
+NB_EVALUATION_EPISODES = 1000
 
 
 class SimpleRLPlayer(Gen8EnvSinglePlayer):
@@ -138,7 +138,7 @@ if __name__=='__main__':
     #model.add(Dense(n_action, activation="linear"))
     
     #print(model.summary())
-    model = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_80000")
+    model = keras.models.load_model("/Users/admin/Desktop/poke/MDSTPoke/model_80000")
     
 
     memory = SequentialMemory(limit=10000, window_length=1)
@@ -169,7 +169,7 @@ if __name__=='__main__':
     dqn.compile(Adam(lr=0.0003), metrics=["mae"])
 
     # Training
-    NUM_EPOCHS = 10
+    NUM_EPOCHS = 500
     
     env_player.play_against(
         env_algorithm=dqn_training,
