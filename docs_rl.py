@@ -9,6 +9,8 @@ from rl.policy import LinearAnnealedPolicy, EpsGreedyQPolicy
 from tensorflow.keras.optimizers import Adam
 from greedy import Greedy
 from model_player import ModelPlayer
+from poke_env.player_configuration import PlayerConfiguration
+from poke_env.server_configuration import ShowdownServerConfiguration
 
 NB_TRAINING_STEPS = 2002
 NB_EVALUATION_EPISODES = 200
@@ -116,10 +118,9 @@ def create_model(n_action=None,load=None):
 
 if __name__=='__main__':
     env_player = SimpleRLPlayer(battle_format="gen8randombattle")
-    #oppmodel = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_20000")
+    oppmodel = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_80000")
     
-    #opponent = ModelPlayer(oppmodel, env_player)
-    opponent = Greedy(battle_format="gen8randombattle")
+    #opponent = Greedy(battle_format="gen8randombattle")
 
     # Output dimension
     n_action = len(env_player.action_space)
