@@ -54,23 +54,23 @@ class SimpleRLPlayer(Gen8EnvSinglePlayer):
         
         our_cur_status = -1
         if battle.active_pokemon.status:
-            our_cur_status = battle.active_pokemon.status.value
+            our_cur_status = battle.active_pokemon.status.value/7
         
         opp_cur_status = -1
         if battle.opponent_active_pokemon.status:
-            opp_cur_status = battle.opponent_active_pokemon.status.value
+            opp_cur_status = battle.opponent_active_pokemon.status.value/7
             
         our_cur_types = -1*np.ones(2)
         opp_cur_types = -1*np.ones(2)
         if battle.active_pokemon:
-            our_cur_types[0] = battle.active_pokemon.type_1.value
+            our_cur_types[0] = battle.active_pokemon.type_1.value/18
             if battle.active_pokemon.type_2:
-                our_cur_types[1] = battle.active_pokemon.type_2.value
+                our_cur_types[1] = battle.active_pokemon.type_2.value/18
         
         if battle.active_pokemon:
-            opp_cur_types[0] = battle.opponent_active_pokemon.type_1.value
+            opp_cur_types[0] = battle.opponent_active_pokemon.type_1.value/18
             if battle.opponent_active_pokemon.type_2:
-                opp_cur_types[1] = battle.opponent_active_pokemon.type_2.value
+                opp_cur_types[1] = battle.opponent_active_pokemon.type_2.value/18
         
         firstturn = battle.active_pokemon.first_turn
         
