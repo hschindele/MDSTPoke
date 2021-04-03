@@ -118,9 +118,9 @@ def create_model(n_action=None,load=None):
 
 if __name__=='__main__':
     env_player = SimpleRLPlayer(battle_format="gen8randombattle")
-    oppmodel = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_80000")
+    #oppmodel = keras.models.load_model("/Users/hschindele/Pokemon-Showdown/mdst-poke-starter-main/model_80000")
     
-    #opponent = Greedy(battle_format="gen8randombattle")
+    opponent = Greedy(battle_format="gen8randombattle")
 
     # Output dimension
     n_action = len(env_player.action_space)
